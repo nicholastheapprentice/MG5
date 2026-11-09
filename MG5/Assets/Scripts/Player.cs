@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class Player : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class Player : MonoBehaviour
     // Add a MEMBER VARIABLE here for the NavMeshAgent Component named _agent.
     // It does NOT need to be tunable in the Inspector.
 
-    // ??? _agent
+    private NavMeshAgent _agent;
 
     // STEP 1 -----------------------------------------------------------------
 
@@ -28,7 +29,7 @@ public class Player : MonoBehaviour
     // We need a Vector3 to keep track of their LAST KNOWN LOCATION.
     // Add a MEMBER VARIABLE here for that location.
     // It does NOT need to be tunable in the Inspector.
-    
+    private Vector3 _position;
 
     // STEP 4 -----------------------------------------------------------------
 
@@ -47,12 +48,11 @@ public class Player : MonoBehaviour
     //      to use GetComponent to grab this GameObject's NavMeshAgent and store
     //      it in the _agent MEMBER VARIABLE.
     //
-    //private void ????()
-    //{
-    //
-    //    _mainCamera = Camera.main;
-    //    _animator = GetComponent<Animator>();
-    //}
+    private void Start()
+    {
+        _mainCamera = Camera.main;
+        _animator = GetComponent<Animator>();
+    }
     // STEP 2 -----------------------------------------------------------------
 
     // ------------------------------------------------------------------------
@@ -75,7 +75,8 @@ public class Player : MonoBehaviour
                 // Make the NavMeshAgent move to this position.
                 //
                 // Feature 2 should work after this step.
-
+                _agent = GetComponent<NavMeshAgent>();
+                _agent.SetDestination(mouseHitPosition);
 
                 // STEP 3 -----------------------------------------------------
 
@@ -87,7 +88,7 @@ public class Player : MonoBehaviour
                 // 
                 // You'll need this GameObject's Transform's position.
                 // See an example in the documentation: https://docs.unity3d.com/6000.0/Documentation/ScriptReference/Transform-position.html
-
+                _position = transform.position;
 
                 // STEP 5 -----------------------------------------------------
             }
@@ -105,19 +106,22 @@ public class Player : MonoBehaviour
         //      the correct one: https://docs.unity3d.com/6000.0/Documentation/ScriptReference/AI.NavMeshAgent.html
         // Feature 3 should work after this.
 
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _agent.Warp(_position);
+        }
 
         // STEP 6 -------------------------------------------------------------
 
         // Uncomment the below line to fix the Pudu's animation if you want.
-        //_animator.SetBool("isMoving", _agent.velocity.magnitude > 0.0f);
+        _animator.SetBool("isMoving", _agent.velocity.magnitude > 0.0f);
     }
-    
+
     // ------------------------------------------------------------------------
     private void OnDrawGizmos ()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawRay(_mouseRay);
-
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(_raycastHit.point, 0.2f);
     }
